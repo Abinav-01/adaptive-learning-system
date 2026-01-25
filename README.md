@@ -67,4 +67,26 @@ To develop a well-organized learning system that supports students with personal
 * Docker Desktop installed
 * Git installed
 
-*(Detailed setup instructions will be added in Phase 2)*
+## 🌿 Branching Strategy
+We follow **GitHub Flow** for development:
+1.  **`main`**: The production-ready code.
+2.  **Feature Branches**: Created for every new task (e.g., `feature/login-page`).
+3.  **Pull Requests**: Used to merge features back into main.
+
+## 🛠 Local Development Tools
+* **Containerization:** Docker Desktop
+* **Backend:** Python Flask
+* **Frontend:** React (Planned)
+* **Editor:** VS Code
+
+## 🚀 Quick Start – Local Development
+1.  **Clone the repo:**
+    ```bash
+    git clone [https://github.com/Abinav-01/ADAPTIVE-LEARNING-SYSTEM.git](https://github.com/Abinav-01/ADAPTIVE-LEARNING-SYSTEM.git)
+    ```
+2.  **Run with Docker:**
+    ```bash
+    docker-compose up --build
+    ```
+3.  **Access App:** Open `http://localhost:5000` in your browser.
+
