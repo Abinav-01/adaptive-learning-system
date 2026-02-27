@@ -68,14 +68,14 @@ The Adaptive Learning System utilizes a modular, layered client-server architect
 ### Design Assets
 All software design files, including editable source diagrams and UI mockups, are located in the [`/docs/design/`](./docs/design/) directory.
 
-* **High-Level Architecture Diagram:** [Architecture.png](./docs/design/Architecture.png) | [Draw.io Source](./docs/design/Architecture.drawio)
+* **High-Level Architecture Diagram:** [Architecture.png](./docs/design/Architecture.jpeg) | [Draw.io Source](./docs/design/Architecture.drawio)
 * **User Interface (Figma Screens):**
-  * [Screen 1: Landing Page](./docs/design/figma1.png)
-  * [Screen 2: Authentication Page](./docs/design/figma2.png)
-  * [Screen 3: Student Dashboard](./docs/design/figma3.png)
-  * [Screen 4: AI Lesson Player](./docs/design/figma4.png)
-  * [Screen 5: Attention Feedback Indicator](./docs/design/figma5.png)
-  * [Screen 6: Post-Lesson Report](./docs/design/figma6.png)
+  * [Screen 1: Landing Page](./docs/design/figma1.jpeg)
+  * [Screen 2: Authentication Page](./docs/design/figma2.jpeg)
+  * [Screen 3: Student Dashboard](./docs/design/figma3.jpeg)
+  * [Screen 4: AI Lesson Player](./docs/design/figma4.jpeg)
+  * [Screen 5: Attention Feedback Indicator](./docs/design/figma5.jpeg)
+  * [Screen 6: Post-Lesson Report](./docs/design/figma6.jpeg)
 
 ---
 
