@@ -95,6 +95,9 @@ All software design files, including editable source diagrams and UI mockups, ar
 
 ---
 
+## 11. Design Summary
+The system is built on a decoupled, modular architecture that separates the interactive frontend from the backend to ensure low coupling and high cohesion. Key design choices include utilizing client-side MediaPipe processing to preserve user privacy and reduce server bandwidth, alongside a FAISS-powered Retrieval-Augmented Generation (RAG) pipeline to dynamically serve curriculum-accurate content without the need for expensive model fine-tuning.
+
 ## Quick Start – Local Development
 
 ### Prerequisites
@@ -123,3 +126,6 @@ We follow **GitHub Flow** for development:
     docker-compose up --build
     ```
 3.  **Access App:** Open `http://localhost:5000` in your browser.
+
+---
+
