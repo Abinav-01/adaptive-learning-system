@@ -70,12 +70,12 @@ All software design files, including editable source diagrams and UI mockups, ar
 
 * **High-Level Architecture Diagram:** [Architecture.png](./docs/design/Architecture.png) | [Draw.io Source](./docs/design/Architecture.drawio)
 * **User Interface (Figma Screens):**
-  * [Screen 1: Landing Page](./docs/design/figma_screen_1.png)
-  * [Screen 2: Authentication Page](./docs/design/figma_screen_2.png)
-  * [Screen 3: Student Dashboard](./docs/design/figma_screen_3.png)
-  * [Screen 4: AI Lesson Player](./docs/design/figma_screen_4.png)
-  * [Screen 5: Attention Feedback Indicator](./docs/design/figma_screen_5.png)
-  * [Screen 6: Post-Lesson Report](./docs/design/figma_screen_6.png)
+  * [Screen 1: Landing Page](./docs/design/figma1.png)
+  * [Screen 2: Authentication Page](./docs/design/figma2.png)
+  * [Screen 3: Student Dashboard](./docs/design/figma3.png)
+  * [Screen 4: AI Lesson Player](./docs/design/figma4.png)
+  * [Screen 5: Attention Feedback Indicator](./docs/design/figma5.png)
+  * [Screen 6: Post-Lesson Report](./docs/design/figma6.png)
 
 ---
 
