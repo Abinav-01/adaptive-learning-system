@@ -61,6 +61,24 @@ To develop a well-organized learning system that supports students with personal
 
 ---
 
+## 10. Software Design 
+
+The Adaptive Learning System utilizes a modular, layered client-server architecture that strictly decouples the interactive React frontend from the Python backend to maintain low coupling. By treating the AI-generated lesson content as a strict JSON structure, the backend can safely serve educational artifacts while keeping the biometric attention tracking (MediaPipe) entirely client-side for maximum privacy and low latency.
+
+### Design Assets
+All software design files, including editable source diagrams and UI mockups, are located in the [`/docs/design/`](./docs/design/) directory.
+
+* **High-Level Architecture Diagram:** [Architecture.png](./docs/design/Architecture.png) | [Draw.io Source](./docs/design/Architecture.drawio)
+* **User Interface (Figma Screens):**
+  * [Screen 1: Landing Page](./docs/design/figma_screen_1.png)
+  * [Screen 2: Authentication Page](./docs/design/figma_screen_2.png)
+  * [Screen 3: Student Dashboard](./docs/design/figma_screen_3.png)
+  * [Screen 4: AI Lesson Player](./docs/design/figma_screen_4.png)
+  * [Screen 5: Attention Feedback Indicator](./docs/design/figma_screen_5.png)
+  * [Screen 6: Post-Lesson Report](./docs/design/figma_screen_6.png)
+
+---
+
 ## Quick Start – Local Development
 
 ### Prerequisites
@@ -89,4 +107,3 @@ We follow **GitHub Flow** for development:
     docker-compose up --build
     ```
 3.  **Access App:** Open `http://localhost:5000` in your browser.
-
