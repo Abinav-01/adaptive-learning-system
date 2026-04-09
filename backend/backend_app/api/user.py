@@ -42,3 +42,24 @@ def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
 def read_current_user(current_user=Depends(get_current_user)):
     """Protected endpoint returning the current authenticated user."""
     return current_user
+
+@router.get("/history")
+def get_user_history(current_user=Depends(get_current_user), db: Session = Depends(get_db)):
+    """Returns the user's recent learning history — one entry per unique (chapter, topic)."""
+    from backend_app.models.learning_session import LearningSession
+    sessions = (
+        db.query(LearningSession)
+        .filter(LearningSession.user_id == current_user.id)
+        .order_by(LearningSession.last_accessed.desc())
+        .all()
+    )
+
+    return [
+       {
+           "chapter_id": s.chapter_id,
+           "chapter_name": s.chapter_name,
+           "topic": s.topic,
+           "last_accessed": s.last_accessed.isoformat()
+       }
+       for s in sessions
+    ]

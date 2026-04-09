@@ -1,92 +1,371 @@
-# Vision Document: Web-Based Adaptive Learning System with Attention Monitoring
+# 🎓 Adaptive Learning System
 
-![Project Status](https://img.shields.io/badge/Status-Development-yellow) ![License](https://img.shields.io/badge/License-MIT-blue)
+![Status](https://img.shields.io/badge/Status-Production--Ready-brightgreen)
+![Stack](https://img.shields.io/badge/Stack-FastAPI%20%7C%20React%20%7C%20Groq-blue)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
-## 1. Project Name & Overview
-**Project Name:** Web-Based Adaptive Learning System with Attention Monitoring for School Students
-
-**Overview:**
-This project is a web-based application designed to support school students by providing personalized explanations and monitoring engagement during study sessions. Unlike standard video lectures, this system dynamically generates content suitable for the student's standard and adapts explanations based on their performance and real-time attention levels. The system bridges the gap between passive learning and active, guided self-study.
-
-## 2. Problem it Solves
-* **Lack of Engagement Monitoring:** Current e-learning systems cannot actively monitor if a student is attentive, leading to unproductive study hours and "zoning out" during video classes.
-* **One-Size-Fits-All Content:** Students often encounter explanations that are either too difficult or too easy because teaching styles are not personalized to their grade level or learning speed.
-* **Lack of Insight:** Teachers and parents currently have very little knowledge about a student's self-study progress or their actual focus levels during study time.
-
-## 3. Target Users (Personas)
-* **Primary User (Students):** School students from different standards who require revision, reinforcement, or alternative explanations for school exams. They need a system that adapts to their pace.
-* **Secondary User (Parents & Teachers):** Guardians and educators who need access to learning progress reports and session summaries to understand where the student is struggling.
-
-## 4. Vision Statement
-To develop a well-organized learning system that supports students with personalized explanations while simultaneously monitoring student engagement to ensure focused and effective self-study.
-
-## 5. Key Features / Goals
-* **Standard & Topic Selection:** Allows students to select their specific school standard (e.g., primary, secondary) and syllabus-based topics.
-* **Attention Monitoring (Computer Vision):** Uses webcam-based face and presence detection to ensure student engagement during sessions. If the student looks away or leaves, the system pauses or alerts.
-* **Adaptive Content Generation:** Dynamically generates learning content (text/visuals) and adapts re-teaching methods when poor performance or distraction is detected.
-* **Voice-Based Explanations:** Provides audio explanations alongside visual materials to cater to auditory learners.
-* **Assessment & Tracking:** Includes periodic quizzes to assess understanding and tracks progress across different subjects.
-
-## 6. Technology Stack
-*(Proposed stack based on project requirements)*
-
-* **Frontend:** React.js / HTML5, CSS3 (For a responsive web interface)
-* **Backend:** Python (Flask/Django) (Required for handling ML logic and request processing)
-* **AI/ML Module:** OpenCV & MediaPipe (For real-time face detection and attention tracking)
-* **Database:** SQL (MySQL/PostgreSQL) (For storing user profiles, progress, and session data)
-* **Deployment:** Docker (For containerization)
-
-## 7. Success Metrics
-* **Engagement Detection:** The system successfully detects student presence and basic attention using the webcam with >85% accuracy.
-* **Adaptive Response:** Learning content successfully changes format or difficulty based on real-time engagement and quiz results.
-* **Improved Outcomes:** Students demonstrate improved understanding through assessments after using the adaptive explanations.
-* **Performance:** The system runs smoothly in a standard browser without significant lag during video processing.
-
-## 8. Assumptions & Constraints
-**Assumptions:**
-* Students have access to a device with a webcam and stable internet connectivity.
-* Students and parents consent to webcam-based monitoring for educational purposes.
-* School syllabus content can be modularized effectively by standard and subject.
-
-**Constraints:**
-* **Hardware:** A webcam is strictly required for the attention monitoring module to function.
-* **Accuracy:** Attention tracking is approximate and cannot fully measure deep cognitive understanding.
-* **Privacy:** Continuous video storage is limited or disabled due to privacy considerations; only processed metrics are stored.
-
-## 9. Future Roadmap (Optional Features)
-* **Difficulty Level Selection:** Allowing students to manually override adaptive settings.
-* **Attention Score:** Generating a "Focus Score" per session for gamification.
-* **Parental Dashboard:** A dedicated login for parents to view detailed session summaries.
-* **Topic Recommendations:** AI-driven suggestions based on past weak areas.
+A modern, **AI-powered adaptive learning platform** for school students. The system generates personalized, topic-specific lesson slides using a Groq-powered LLM backend, delivers real-time voice-enabled AI tutoring, and passively tracks student engagement using on-device deep learning (MediaPipe FaceMesh).
 
 ---
 
-## Quick Start – Local Development
+## 📋 Table of Contents
 
-### Prerequisites
-* Docker Desktop installed
-* Git installed
+- [Overview](#-overview)
+- [Architecture](#-architecture)
+- [Tech Stack](#-tech-stack)
+- [Key Features](#-key-features)
+- [Project Structure](#-project-structure)
+- [Environment Setup](#-environment-setup)
+- [Running Locally](#-running-locally)
+- [API Reference](#-api-reference)
+- [API Testing (curl)](#-api-testing-curl)
+- [Attention Monitoring](#-attention-monitoring)
+- [Caching Strategy](#-caching-strategy)
+- [Design Assets](#-design-assets)
 
-## 🌿 Branching Strategy
-We follow **GitHub Flow** for development:
-1.  **`main`**: The production-ready code.
-2.  **Feature Branches**: Created for every new task (e.g., `feature/login-page`).
-3.  **Pull Requests**: Used to merge features back into main.
+---
 
-## 🛠 Local Development Tools
-* **Containerization:** Docker Desktop
-* **Backend:** Python Flask
-* **Frontend:** React (Planned)
-* **Editor:** VS Code
+## 🌟 Overview
 
-## 🚀 Quick Start – Local Development
-1.  **Clone the repo:**
-    ```bash
-    git clone [https://github.com/Abinav-01/ADAPTIVE-LEARNING-SYSTEM.git](https://github.com/Abinav-01/ADAPTIVE-LEARNING-SYSTEM.git)
-    ```
-2.  **Run with Docker:**
-    ```bash
-    docker-compose up --build
-    ```
-3.  **Access App:** Open `http://localhost:5000` in your browser.
+This platform replaces static e-learning content with **dynamically generated, curriculum-aligned lessons** built on-the-fly per student request. An on-device deep learning model passively monitors attention (face orientation, gaze) without blocking or interrupting the learning experience.
 
+**Core value loop:**
+1. Student selects or searches a topic
+2. RAG engine retrieves relevant curriculum context from FAISS
+3. Groq (`llama-3.1-8b-instant`) generates structured JSON lesson slides
+4. Slides are cached per topic to avoid redundant LLM invocations
+5. Student's attention is tracked silently via MediaPipe FaceMesh
+6. Engagement metrics are logged and visualized in an analytics dashboard
+
+---
+
+## 🏗 Architecture
+
+```
+┌──────────────────────────────────────────────────────┐
+│                    React Frontend                    │
+│  LessonPlayer → SlideView (all content per slide)   │
+│  AITutor (floating chatbot + voice)                 │
+│  AttentionMonitor (MediaPipe, passive, client-side) │
+│  Analytics Dashboard (Recharts)                     │
+└────────────────────┬─────────────────────────────────┘
+                     │ HTTP / REST (JWT Auth)
+┌────────────────────▼─────────────────────────────────┐
+│                  FastAPI Backend                     │
+│  /lessons/{id}/generate  →  LLM cache + generation  │
+│  /ai/ask                 →  AI Tutor (Groq)          │
+│  /ai/interpret-topic     →  Topic routing            │
+│  /lessons/attention-log  →  Biometric logging        │
+│  /analytics/lesson/{id}  →  Session reporting        │
+│  /users/history          →  Per-topic learning trail │
+└──────────┬──────────────────────┬────────────────────┘
+           │                      │
+    ┌──────▼──────┐       ┌───────▼──────┐
+    │  Groq API   │       │ FAISS + SQLite│
+    │ llama-3.1-8b│       │ Vector Store  │
+    └─────────────┘       └──────────────┘
+```
+
+---
+
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Frontend** | React 18, Vite, Framer Motion, Recharts, TailwindCSS |
+| **Backend** | FastAPI, Uvicorn, SQLAlchemy, Pydantic |
+| **AI / LLM** | Groq API (`llama-3.1-8b-instant`) |
+| **RAG Engine** | FAISS, Sentence Transformers |
+| **Attention ML** | MediaPipe FaceMesh (client-side, WebAssembly) |
+| **Database** | SQLite (via SQLAlchemy ORM) |
+| **Auth** | JWT (python-jose, passlib bcrypt) |
+| **PDF Ingestion** | PyMuPDF |
+| **Containerization** | Docker / Docker Compose |
+
+---
+
+## ✨ Key Features
+
+### 🤖 AI-Powered Lesson Generation
+- Topic-specific lesson slides generated by Groq's ultra-fast LLM
+- Each slide contains: title, bullet points, LaTeX formula, step-by-step example, practice questions, and AI narration
+- **Intelligent caching** — LLM only called on first request per topic; subsequent hits served from DB cache
+
+### 📚 RAG-Enhanced Context
+- Curriculum PDFs are ingested and chunked into FAISS vector store
+- Top-5 semantically relevant chunks retrieved per topic and injected into the prompt
+- Ensures content accuracy to the actual syllabus
+
+### 💬 AI Tutor (Groq-powered)
+- Floating chatbot accessible on every slide
+- Answers student questions in context of the current slide
+- Supports **Voice Mode** — speech recognition + synthesis for hands-free tutoring
+- Intent detection: "next slide", "repeat that" voice commands
+
+### 👁 Passive Attention Monitoring
+- MediaPipe FaceMesh DL model runs entirely in the browser (no server calls)
+- Tracks nose/eye landmark deviation to compute real-time focus score (0.0–1.0)
+- **Zero interruptions** — passive data collection only, no UI blocking or popups
+- Scores logged to backend every 2 seconds, flushed every 10 seconds
+
+### 📊 Analytics Dashboard
+- Interactive area chart showing attention timeline across session
+- Metrics: average focus %, attention gaps, data points, session duration
+- Per-topic, per-student learning history
+
+### 🗂 Per-Topic Learning History
+- Each unique topic creates a separate history entry
+- Resume any past topic with one click from dashboard
+- History respects per-user auth context
+
+---
+
+## 📁 Project Structure
+
+```
+ADAPTIVE-LEARNING-SYSTEM/
+├── backend/
+│   ├── main.py                    # FastAPI app entry point
+│   ├── requirements.txt
+│   ├── backend_app/
+│   │   ├── ai/
+│   │   │   ├── llm_service.py     # Groq lesson generation + JSON cleaning
+│   │   │   └── gemini_client.py   # (legacy, kept for reference)
+│   │   ├── api/
+│   │   │   ├── lesson.py          # /lessons/* endpoints
+│   │   │   ├── ai_tutor.py        # /ai/ask, /ai/interpret-topic
+│   │   │   ├── attention.py       # /lessons/attention-log
+│   │   │   ├── analytics.py       # /analytics/*
+│   │   │   └── user.py            # /users/* (auth, history)
+│   │   ├── models/
+│   │   │   ├── user.py
+│   │   │   ├── learning_session.py  # Per-topic session tracker
+│   │   │   ├── attention_log.py
+│   │   │   └── lesson_content.py    # LLM output cache
+│   │   ├── rag/
+│   │   │   └── vector_service.py  # FAISS + SentenceTransformer
+│   │   ├── core/
+│   │   │   ├── config.py
+│   │   │   └── security.py        # JWT auth
+│   │   └── db/
+│   │       ├── base.py
+│   │       └── session.py
+├── frontend/
+│   └── src/
+│       ├── components/
+│       │   ├── LessonPlayer.jsx   # Main lesson UI + slideshow
+│       │   ├── SlideView.jsx      # Full-content slide renderer
+│       │   ├── AITutor.jsx        # Floating chatbot + voice
+│       │   ├── AttentionMonitor.jsx  # MediaPipe passive tracker
+│       │   ├── FormulaView.jsx    # KaTeX math renderer
+│       │   └── CameraPreview.jsx
+│       └── pages/
+│           ├── Dashboard.jsx      # Hub + history + search
+│           └── Analytics.jsx      # Engagement report
+├── .env                           # GROQ_API_KEY + secrets
+├── .env.example
+└── Docker-compose.yml
+```
+
+---
+
+## ⚙ Environment Setup
+
+Create a `.env` file in the project root:
+
+```env
+GROQ_API_KEY=gsk_your_groq_api_key_here
+SECRET_KEY=your_jwt_secret_key_here
+DATABASE_URL=sqlite:///./app.db
+```
+
+> Get your Groq API key at [console.groq.com](https://console.groq.com)
+
+---
+
+## 🚀 Running Locally
+
+### Backend
+
+```bash
+cd backend
+
+# Create and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start server
+python3 main.py
+# → Running at http://localhost:8000
+```
+
+### Frontend
+
+```bash
+cd frontend
+
+npm install
+npm run dev
+# → Running at http://localhost:5173
+```
+
+### Interactive API Docs
+
+```
+http://localhost:8000/docs      # Swagger UI
+http://localhost:8000/redoc     # ReDoc
+```
+
+---
+
+## 📡 API Reference
+
+### Authentication
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/users/register` | Register a new student account |
+| `POST` | `/users/login` | Login, returns JWT token |
+| `GET` | `/users/me` | Get current authenticated user |
+| `GET` | `/users/history` | Get per-topic learning history |
+
+### Lessons
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/lessons/{chapter_id}/generate` | Generate or serve cached lesson slides |
+| `POST` | `/lessons/clear-cache` | Force clear all cached lesson content |
+| `POST` | `/lessons/attention-log` | Log a student attention score |
+
+**Query params for `/generate`:**
+- `topic` (string) — specific topic to focus on (e.g. `quadratic+equations`)
+- `force_refresh` (bool) — bypass cache, call Groq fresh
+
+### AI Tutor
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/ai/ask` | Ask the AI tutor a question in slide context |
+| `POST` | `/ai/interpret-topic` | Convert natural language to chapter routing |
+
+### Analytics
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/analytics/lesson/{lesson_id}` | Get engagement report for a session |
+
+---
+
+## 🧪 API Testing (curl)
+
+```bash
+# 1. Register
+curl -X POST http://localhost:8000/users/register \
+  -H "Content-Type: application/json" \
+  -d '{"email": "student@example.com", "password": "pass1234", "full_name": "Alex"}'
+
+# 2. Login + capture token
+TOKEN=$(curl -s -X POST http://localhost:8000/users/login \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=student@example.com&password=pass1234" \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+
+# 3. Generate a lesson (calls Groq first time)
+curl "http://localhost:8000/lessons/chapter_2/generate?topic=quadratic+equations" \
+  -H "Authorization: Bearer $TOKEN"
+
+# 4. Force regenerate (bypasses cache)
+curl "http://localhost:8000/lessons/chapter_2/generate?topic=quadratic+equations&force_refresh=true" \
+  -H "Authorization: Bearer $TOKEN"
+
+# 5. Ask AI Tutor
+curl -X POST http://localhost:8000/ai/ask \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"question": "What is the discriminant?", "context": {"title": "Quadratic Equations", "bullets": [], "formula": "x = (-b \\pm \\sqrt{b^2 - 4ac}) / 2a", "narration": ""}}'
+
+# 6. Log attention score
+curl -X POST http://localhost:8000/lessons/attention-log \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"lesson_id": "chapter_2", "attention_score": 0.75}'
+
+# 7. Get analytics
+curl http://localhost:8000/analytics/lesson/chapter_2 \
+  -H "Authorization: Bearer $TOKEN"
+
+# 8. Get history
+curl http://localhost:8000/users/history \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## 👁 Attention Monitoring
+
+The attention system uses **MediaPipe FaceMesh** — a neural network model running entirely in the browser via WebAssembly. No video data ever leaves the device.
+
+**How the score is calculated:**
+1. Detects 468 3D facial landmarks via the face mesh model
+2. Computes nose-to-eye-midpoint deviation (depth-invariant via eye distance normalization)
+3. Maps lateral + vertical deviation to a score: `score = max(0.1, 1.0 - deviation * 1.8)`
+4. Smoothed over a 10-sample rolling average
+
+**Score ranges:**
+| Score | Meaning |
+|---|---|
+| `0.85 – 1.0` | Directly facing screen |
+| `0.60 – 0.84` | Slight movement, still engaged |
+| `0.30 – 0.59` | Looking partially away |
+| `< 0.30` | Looking away / not present |
+
+---
+
+## 🗄 Caching Strategy
+
+Every unique `(chapter_id, topic)` pair is cached separately in the `lesson_content` SQLite table:
+
+- **Cache Key Format:** `chapter_2::cubic polynomials`
+- **Cache Hit:** Serve immediately (0ms LLM overhead)
+- **Cache Miss / Fallback:** Call Groq, store result
+- **Force Refresh:** Append `?force_refresh=true` or use the `⟳` button in the lesson player
+- **Invalidation:** Only if content is explicitly marked `is_fallback=True`
+
+---
+
+## 🎨 Design Assets
+
+All design files are in [`/docs/design/`](./docs/design/):
+
+- **Architecture Diagram:** [Architecture.png](./docs/design/Architecture.png)
+- **UI Mockups:**
+  - [Screen 1: Landing Page](./docs/design/figma_screen_1.png)
+  - [Screen 2: Authentication](./docs/design/figma_screen_2.png)
+  - [Screen 3: Student Dashboard](./docs/design/figma_screen_3.png)
+  - [Screen 4: AI Lesson Player](./docs/design/figma_screen_4.png)
+  - [Screen 5: Attention Indicator](./docs/design/figma_screen_5.png)
+  - [Screen 6: Post-Lesson Report](./docs/design/figma_screen_6.png)
+
+---
+
+## 🛡 Privacy & Security
+
+- **No video storage** — MediaPipe runs entirely client-side; only numeric attention scores (0.0–1.0) are sent to the backend
+- **JWT authentication** — all sensitive endpoints are protected
+- **Passive tracking only** — no UI interruptions, overlays, blurring, or alerts based on attention
+- **API keys** — stored exclusively in `.env`, never committed to version control (`.gitignore` enforced)
+
+---
+
+## 🗺 Roadmap
+
+- [ ] Multi-subject RAG (beyond Mathematics)
+- [ ] Parental dashboard with weekly engagement reports
+- [ ] Adaptive difficulty based on cumulative attention patterns
+- [ ] HTTPS + production deployment (Render / Railway)
+- [ ] Student quiz module with adaptive retry logic
+
+---
+
+## 📄 License
+
+MIT License — see [LICENSE](./LICENSE) for details.

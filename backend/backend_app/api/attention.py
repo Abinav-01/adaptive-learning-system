@@ -7,7 +7,6 @@ from backend_app.core.security import get_current_user_optional
 
 router = APIRouter()
 
-
 @router.post("/attention-log")
 def post_attention_log(payload: AttentionLogCreate, db: Session = Depends(get_db), current_user=Depends(get_current_user_optional)):
     """Receive periodic attention logs from the frontend and persist them.

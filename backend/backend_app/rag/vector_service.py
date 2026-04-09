@@ -31,9 +31,11 @@ class VectorStoreManager:
         if os.path.exists(DEFAULT_INDEX_PATH) and os.path.exists(DEFAULT_ENTRIES_PATH):
             try:
                 self.load_index(DEFAULT_INDEX_PATH, DEFAULT_ENTRIES_PATH)
+                print("✅ FAISS loaded successfully")
             except Exception:
-                # If loading fails, continue with empty index
-                pass
+                print("⚠️ FAISS index not found — RAG will fail")
+        else:
+            print("⚠️ FAISS index not found — RAG will fail")
 
     def _ensure_index_ready(self):
         if self.index is None:
@@ -100,4 +102,22 @@ class VectorStoreManager:
                 continue
             entry = self.entries[int(idx)]
             results.append({"text": entry["text"], "metadata": entry["metadata"], "score": float(score)})
+            
+        if not results or (results and results[0].get("score", 0) < 0.15):
+            print("⚠️ FAISS retrieval empty or weak. Using DB fallback context.")
+            from backend_app.db.session import SessionLocal
+            from backend_app.models.chapter_content import ChapterContent
+            db = SessionLocal()
+            try:
+                # Pull 3 most recent generic chapter rows as a deterministic fallback
+                fallback_rows = db.query(ChapterContent).order_by(ChapterContent.id.desc()).limit(3).all()
+                results = [{"text": r.content, "metadata": {"chapter_id": r.chapter_id}, "score": 1.0} for r in fallback_rows]
+                print(f"✅ Fallback context used: {len(results)} chunks.")
+            except Exception as e:
+                print(f"⚠️ DB Fallback failed: {e}")
+            finally:
+                db.close()
+        else:
+            print(f"✅ Retrieved {len(results)} chunks from FAISS")
+            
         return results

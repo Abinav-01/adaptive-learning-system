@@ -11,6 +11,8 @@ from backend_app.api.user import router as user_router
 from backend_app.api.subject import router as subject_router
 from backend_app.api.lesson import router as lesson_router
 from backend_app.api.attention import router as attention_router
+from backend_app.api.analytics import router as analytics_router
+from backend_app.api.ai_tutor import router as ai_tutor_router
 from backend_app.core.config import settings
 
 
@@ -36,6 +38,8 @@ app.include_router(user_router)
 app.include_router(subject_router)
 app.include_router(lesson_router, prefix="/lessons", tags=["Lessons"])
 app.include_router(attention_router, prefix="/lessons", tags=["Lessons"])
+app.include_router(analytics_router, prefix="/analytics", tags=["Analytics"])
+app.include_router(ai_tutor_router, prefix="/ai", tags=["AI Tutor"])
 
 
 @app.get("/", response_class=JSONResponse)
